@@ -41,7 +41,7 @@ def solve_nQueens(board, col):
 
     return False
 
-#this is a test to test how github is working
+
 # Complete this part; add more functions if you need
 def nQueens_solver(input_df):
     initialBoard = input_df.to_numpy()
