@@ -1,55 +1,31 @@
 # CPSC 460/560 AI project 1 - Constrained N_Queens using backtracking
-# Constraint: 1st queen's position is fixed
+#                             Constraint: 1st queen's position is fixed and Las Vegas and Minimum Conflicts Algorithm
 # Author: your name
 #
 # Do not change the following part. NO other package is allowed.
 import sys
 import numpy as np
 import pandas as pd
-
+import random
 # ---------------------------------------------------------------
 
-
-def promise(board, row, col):
-    for i in range(row-1, -1, -1):
-        if board[i] == col or \
-            board[i] - i == col - row or \
-            board[i] + i == col + row:
-            return False
-    return True
+def conflict(board, row, col):
+    for i in range(row):
+        if board[i] == col or board[i] - i == col - row or board[i] + i == col + row:
+            return True
+    return False
 
 
-def lcv(board, row):
-    n = len(board)
-    constraining_values = []
-    for col in range(n):
-        if promise(board, row, col):
-            board[row] = col
-            count = sum(not promise(board, row + 1, i) for i in range(n))
-            constraining_values.append((count, col))
-            board[row] = 0
-
-    constraining_values.sort()
-    return [col for _, col in constraining_values]
-
-
-def solve(board, row, size, fixed_pos):
+def solve(board, row, size):
     if row == size:
         return True
 
-    if row == fixed_pos[0]:  # If the row is the row of the fixed queen
-        if promise(board, row, fixed_pos[1]):
-            board[row] = fixed_pos[1]
-            if solve(board, row + 1, size, fixed_pos):
+    for col in random.sample(range(size), size):
+        if not conflict(board, row, col):
+            board[row] = col
+            if solve(board, row + 1, size):
                 return True
-            board[row] = 0
-    else:
-        for col in lcv(board, row):
-            if promise(board, row, col):
-                board[row] = col
-                if solve(board, row + 1, size, fixed_pos):
-                    return True
-                board[row] = 0
+            board[row] = -1
     return False
 
 
@@ -58,10 +34,10 @@ def nQueens_solver(initialBoard):
     row, col = np.where(initial_position == 1)
     initial_pos = (row[0], col[0])
     board_size = len(initialBoard)
-    board = [0] * board_size
+    board = [-1] * board_size
     board[initial_pos[0]] = initial_pos[1]
 
-    if not solve(board, 0, board_size, initial_pos):
+    if not solve(board, 1, board_size): #Start on row 1 as first row is locked
         return None  # No solution case
 
     solution_array = np.zeros((board_size, board_size), int)
@@ -70,6 +46,7 @@ def nQueens_solver(initialBoard):
 
     solution = pd.DataFrame(solution_array)
     return solution
+
 
 # No need to change the main function. Do not change output filename.
 def main():
