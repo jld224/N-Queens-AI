@@ -1,6 +1,6 @@
 # CPSC 460/560 AI project 1 - Constrained N_Queens using backtracking
 #                             Constraint: 1st queen's position is fixed
-# Author: your name
+# Author: Jake Darida
 #
 # Do not change the following part. NO other package is allowed.
 import sys
